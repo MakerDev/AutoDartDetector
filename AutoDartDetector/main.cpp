@@ -5,9 +5,22 @@
 using namespace std;
 using namespace cv;
 
-int main()
+int main(int argc, char** argv)
 {
-	DartDetector detector("Videos\\video50.mov", 4);
+	string vidName;
+
+	cout << argc;
+
+	if (argc == 1)
+	{
+		vidName = argv[1];
+	}
+	else 
+	{
+		vidName = "Videos\\video50.mov";
+	}
+
+	DartDetector detector(vidName, 4);
 	detector.init();
 
 	Mat frame;

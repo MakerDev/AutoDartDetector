@@ -20,7 +20,7 @@ private:
 	Mat mPointImage;
 	vector<Point2f> mHitPoints;
 	vector<int> mScores;
-	int mRadius;
+	float mRadius;
 
 	int mScoreList[20];
 

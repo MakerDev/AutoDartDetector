@@ -12,6 +12,7 @@ void ScoreCaculator::setImages(const Mat& circleImage, const Mat& pointImage)
 {
 	mCircleImage = circleImage.clone();
 	mPointImage = pointImage.clone();
+	mRadius = 0;
 }
 
 vector<int> ScoreCaculator::getScores()
@@ -32,7 +33,14 @@ void ScoreCaculator::calculateScore()
 	findHitPoints();
 
 	Point2f circleCenter(0, 0);
-	mRadius = detectCircleByHough(circleCenter) - distance(circleCenter, mCenter);
+
+	float rad = detectCircleByHough(circleCenter);
+	float dist = distance(circleCenter, mCenter);
+
+	mRadius = rad - dist;
+	cout << "mCenter : " << mCenter << endl;
+	cout << "Circle Center : " << circleCenter << endl;;
+	cout << "rad : " << rad << "  dist : " << dist << " radius : " << mRadius << endl;
 
 	for (int i = 0; i < mHitPoints.size(); i++)
 	{
@@ -60,7 +68,7 @@ void ScoreCaculator::findHitPoints()
 	{
 		approxPolyDP(Mat(contours[i]), approx, arcLength(Mat(contours[i]), true)*0.02, true);
 
-		if (fabs(contourArea(Mat(approx))) > 15) 										 
+		if (fabs(contourArea(Mat(approx))) > 15)
 		{
 			int size = approx.size();
 
@@ -107,16 +115,23 @@ int ScoreCaculator::detectCircleByHough(Point2f& boardCenter)
 
 	cvtColor(mCircleImage, gray, CV_BGR2GRAY);
 
-	GaussianBlur(gray, gray, Size(9, 9), 2, 2);
+	GaussianBlur(gray, gray, Size(13, 13), 2, 2);
 	vector<Vec3f> circles;
 	HoughCircles(gray, circles, CV_HOUGH_GRADIENT,
-		2, gray.rows / 4, 200, 100);
+		2, gray.rows / 2, 200, 100, 210, 235);
 
 	if (circles.size() == 0)
 		return 0;
 
 	boardCenter = Point2f(cvRound(circles[0][0]), cvRound(circles[0][1]));
 	int radius = cvRound(circles[0][2]);
+
+	Mat result = mCircleImage.clone();
+	// draw the circle center
+	circle(result, boardCenter, 3, Scalar(0, 255, 0), -1, 8, 0);
+	// draw the circle outline
+	circle(result, boardCenter, radius, Scalar(0, 0, 255), 3, 8, 0);
+	imshow("Circle", result);
 
 	return radius;
 }

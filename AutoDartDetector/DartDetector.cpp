@@ -37,7 +37,11 @@ void DartDetector::detect(int mSecs)
 
 void DartDetector::init()
 {
-	assert(vid.isOpened());
+	if (!vid.isOpened())
+	{
+		cout << "Video Not Opened!" << endl;
+		assert(false);
+	}
 
 	isDetecting = false;
 
@@ -53,7 +57,6 @@ void DartDetector::init()
 	pointImage.setTo(Scalar(0, 0, 0));
 
 	selectCorners();
-	warpImage(boardImage, warpedBoardImage);
 
 	pMOG2 = createBackgroundSubtractorMOG2(500, 250, false);
 
