@@ -35,10 +35,10 @@ private:
 	bool isInitialized = false;	//초기화 여부
 
 	int waitTime;
-	int mSec; //검출하는 시간(밀리초)
+	int mSec; //검출하는 시간
 	bool isDetecting;
-	Point2f currentPoint; //끝 점 검출에 사용 -> 수정 고려
-	Point2f finalPoint; //최종 위치
+	Point2f currentPoint; 
+	Point2f finalPoint; 
 	Ptr< BackgroundSubtractor> pMOG2; //배경 검출기
 
 	void selectCorners();
@@ -46,4 +46,6 @@ private:
 	void mouseHandler(int e, int x, int y);
 	void warpImage(const Mat& inputImage, Mat& result);
 	void detectDartCorner(Mat& src,  int thresh = 130);
+
+	void ShowScores(const Mat& backgroundImage, const vector<Point2f>& points, const vector<int>& scores);
 };

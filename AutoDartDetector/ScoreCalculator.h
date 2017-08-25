@@ -9,15 +9,25 @@ class ScoreCaculator
 {
 public:
 	ScoreCaculator();
-	void Init(Mat& circleImage);
+	void setImages(const Mat& circleImage, const Mat& pointImage);
+	vector<int> getScores();
+	vector<Point2f> getPoints();
+	void calculateScore();
 
 private:
-	Point2f center; // °ú³á Áß½É
+	Point2f mCenter; // °ú³á Áß½É
+	Mat mCircleImage;
+	Mat mPointImage;
+	vector<Point2f> mHitPoints;
+	vector<int> mScores;
+	int mRadius;
 
-	void findHitPoints(const Mat& img_input, Mat& img_result, vector<Point2f>& hitPoints);
+	int mScoreList[20];
+
+	void findHitPoints();
 	float getAngle(const Point2f& a, const Point2f& b, const Point2f& c);
-	int detectCircleByHough(const Mat& image, Mat& result, Point2f& center);
-	bool detectCircleByBlobDetector(const Mat& image, Mat& result, Point2f& center);
+	int detectCircleByHough(Point2f& boardCenter);
+	void detectCircleByBlobDetector();
 	float distance(const Point2f& p1, const Point2f& p2);
 	int calcScore(const Point2f& hitPoint);
 };
