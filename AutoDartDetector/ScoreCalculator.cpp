@@ -60,7 +60,7 @@ void ScoreCaculator::findHitPoints()
 	{
 		approxPolyDP(Mat(contours[i]), approx, arcLength(Mat(contours[i]), true)*0.02, true);
 
-		if (fabs(contourArea(Mat(approx))) > 15) //면적이 일정크기 이상이어야 한다. 											 
+		if (fabs(contourArea(Mat(approx))) > 15) 										 
 		{
 			int size = approx.size();
 
@@ -179,8 +179,6 @@ int ScoreCaculator::calcScore(const Point2f & hitPoint)
 		mul = 2;
 
 	score *= mul;
-
-	cout << score << endl;
 
 	return score;
 }

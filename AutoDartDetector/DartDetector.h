@@ -45,7 +45,7 @@ private:
 	static void DartDetector::OnMouse(int e, int x, int y, int flags, void* param);
 	void mouseHandler(int e, int x, int y);
 	void warpImage(const Mat& inputImage, Mat& result);
-	void detectDartCorner(Mat& src,  int thresh = 130);
+	void detectDartCorner(const Mat& src,  int thresh = 130);
 
 	void ShowScores(const Mat& backgroundImage, const vector<Point2f>& points, const vector<int>& scores);
 };

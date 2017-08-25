@@ -178,7 +178,7 @@ void DartDetector::warpImage(const Mat & inputImage, Mat & result)
 	result = warpImg.clone();
 }
 
-void DartDetector::detectDartCorner(Mat& src, int thresh)
+void DartDetector::detectDartCorner(const Mat& src, int thresh)
 {
 	Mat src_gray;
 	Mat dst, dst_norm, dst_norm_scaled;

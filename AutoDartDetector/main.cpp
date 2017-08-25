@@ -7,15 +7,8 @@ using namespace cv;
 
 int main()
 {
-	VideoCapture video("Video48.mov");
-	DartDetector detector("Video48.mov", 4);
+	DartDetector detector("Videos\\video50.mov", 4);
 	detector.init();
-
-	if (!video.isOpened())
-	{
-		cout << "Error Opening Video File" << endl;
-		return 1;
-	}
 
 	Mat frame;
 
@@ -29,10 +22,7 @@ int main()
 		if (ch == 27)
 			break;
 		else if (ch > 0)
-		{
-			//detect (const& Mat frame, int sizeReduce); detectµÈ Point ¹ÝÈ¯
 			detector.detect(2000);
-		}
 	}
 
 	return 0;
