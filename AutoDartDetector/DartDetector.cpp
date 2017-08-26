@@ -58,7 +58,7 @@ void DartDetector::init()
 
 	selectCorners();
 
-	pMOG2 = createBackgroundSubtractorMOG2(500, 250, false);
+	pMOG2 = createBackgroundSubtractorMOG2(500, 200, false);
 
 	isInitialized = true;
 }

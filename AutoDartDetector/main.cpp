@@ -15,7 +15,7 @@ int main(int argc, char** argv)
 	}
 	else 
 	{
-		vidName = "Videos\\video45.mov";
+		vidName = "Videos\\video53.mov";
 	}
 
 	DartDetector detector(vidName, 4);

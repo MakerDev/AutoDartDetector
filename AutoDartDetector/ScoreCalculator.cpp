@@ -147,20 +147,30 @@ void ScoreCaculator::detectCircleByBlobDetector()
 	vector<KeyPoint> keypoints;
 	detector->detect(img_gray, keypoints);
 
-#ifdef _DEBUG
-	Mat result = mCircleImage.clone();
-	drawKeypoints(result, keypoints, result, Scalar(255, 0, 0),
-		DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
-
-	imshow("Blob", result);
-#endif // DEBUG
 
 
 	vector<Point2f> centers;
 
 	KeyPoint::convert(keypoints, centers);
 
-	mCenter = Point2f(centers[0].x, centers[0].y);
+	Point2f center;
+	for (int i = 0; i < centers.size(); i++)
+	{
+		if (centers[i].x > (mCircleImage.size().width / 2 - 100) && centers[i].x < (mCircleImage.size().width / 2 + 100))
+			center = centers[i];
+	}
+
+#ifdef _DEBUG
+	Mat result = mCircleImage.clone();
+	drawKeypoints(result, keypoints, result, Scalar(255, 0, 0),
+		DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+	circle(result, center, 5, Scalar(255, 0, 0));
+
+	//imshow("Blob", result);
+#endif // DEBUG
+
+	mCenter.y -= 10;
+	mCenter = center;
 }
 
 float ScoreCaculator::distance(const Point2f & p1, const Point2f & p2)
@@ -206,14 +216,19 @@ void ScoreCaculator::calcRadius()
 	cvtColor(mCircleImage, src_gray, CV_BGR2GRAY);
 	result.create(mCircleImage.size(), mCircleImage.type());
 
-	Canny(src_gray, result, 45, 290);
+	Canny(src_gray, result, 32, 64);
 
-	Point movePoint(mCenter.x, mCenter.y);
+	Point movePoint(mCenter.x, mCenter.y+10);
 	bool flag = false;
 	int numOfEncounter = 0;
 
 	while (true)
 	{
+		if (movePoint.x >= 430)
+		{
+			movePoint.x = 430;
+			break;
+		}
 
 		if (result.at<uchar>(movePoint) == 255 && flag == false)
 		{
@@ -222,7 +237,7 @@ void ScoreCaculator::calcRadius()
 
 			int dis = movePoint.x - mCenter.x;
 
-			if (dis <= 210 && dis >= 195)
+			if (dis <= 215 && dis >= 205)
 				break;
 
 		}
@@ -234,13 +249,14 @@ void ScoreCaculator::calcRadius()
 		movePoint.x++;
 	}
 
-	mRadius = movePoint.x + 5 - mCenter.x;
+	mRadius = movePoint.x - mCenter.x;
 
 #ifdef _DEBUG
 	Mat showImage = mCircleImage.clone();
 	circle(showImage, mCenter, mRadius, Scalar(100, 255, 136));
 	imshow("Rad", showImage);
-	imshow("Canny", result);
+	//imshow("Canny", result);
+	cout << movePoint.x;
 	cout << "Radius : " << mRadius << endl;
 
 	waitKey(10);
