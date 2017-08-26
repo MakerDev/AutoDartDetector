@@ -31,16 +31,7 @@ void ScoreCaculator::calculateScore()
 	mScores.clear();
 
 	findHitPoints();
-
-	Point2f circleCenter(0, 0);
-
-	float rad = detectCircleByHough(circleCenter);
-	float dist = distance(circleCenter, mCenter);
-
-	mRadius = rad - dist;
-	cout << "mCenter : " << mCenter << endl;
-	cout << "Circle Center : " << circleCenter << endl;;
-	cout << "rad : " << rad << "  dist : " << dist << " radius : " << mRadius << endl;
+	calcRadius();
 
 	for (int i = 0; i < mHitPoints.size(); i++)
 	{
@@ -118,7 +109,7 @@ int ScoreCaculator::detectCircleByHough(Point2f& boardCenter)
 	GaussianBlur(gray, gray, Size(13, 13), 2, 2);
 	vector<Vec3f> circles;
 	HoughCircles(gray, circles, CV_HOUGH_GRADIENT,
-		2, gray.rows / 2, 200, 100, 210, 235);
+		2, gray.rows / 4, 200, 100, 210, 235);
 
 	if (circles.size() == 0)
 		return 0;
@@ -126,10 +117,11 @@ int ScoreCaculator::detectCircleByHough(Point2f& boardCenter)
 	boardCenter = Point2f(cvRound(circles[0][0]), cvRound(circles[0][1]));
 	int radius = cvRound(circles[0][2]);
 
+	boardCenter.x -= 2;
+	boardCenter.y -= 10;
+
 	Mat result = mCircleImage.clone();
-	// draw the circle center
 	circle(result, boardCenter, 3, Scalar(0, 255, 0), -1, 8, 0);
-	// draw the circle outline
 	circle(result, boardCenter, radius, Scalar(0, 0, 255), 3, 8, 0);
 	imshow("Circle", result);
 
@@ -154,6 +146,15 @@ void ScoreCaculator::detectCircleByBlobDetector()
 
 	vector<KeyPoint> keypoints;
 	detector->detect(img_gray, keypoints);
+
+#ifdef _DEBUG
+	Mat result = mCircleImage.clone();
+	drawKeypoints(result, keypoints, result, Scalar(255, 0, 0),
+		DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+
+	imshow("Blob", result);
+#endif // DEBUG
+
 
 	vector<Point2f> centers;
 
@@ -181,14 +182,14 @@ int ScoreCaculator::calcScore(const Point2f & hitPoint)
 	int angle = getAngle(centerPlus, mCenter, hitPoint);
 
 	float dist = distance(mCenter, hitPoint) / (float)mRadius;
-	int scoreOfSector = angle / 18; //ex) 25도이면 1번째 점수이며, 0부터 시작
+	int scoreOfSector = (angle + 9) / 18; //ex) 25도이면 1번째 점수이며, 0부터 시작
 
 	if (dist <= 0.1)
 		score = 50;
 	else
 		score = mScoreList[scoreOfSector];
 
-	if (dist >= 0.5 && dist <= 0.725)
+	if (dist >= 0.5 && dist <= 0.70)
 		mul = 3;
 	else if (dist >= 0.875 && dist <= 1)
 		mul = 2;
@@ -196,4 +197,53 @@ int ScoreCaculator::calcScore(const Point2f & hitPoint)
 	score *= mul;
 
 	return score;
+}
+
+void ScoreCaculator::calcRadius()
+{
+	Mat src_gray, result;
+
+	cvtColor(mCircleImage, src_gray, CV_BGR2GRAY);
+	result.create(mCircleImage.size(), mCircleImage.type());
+
+	Canny(src_gray, result, 45, 290);
+
+	Point movePoint(mCenter.x, mCenter.y);
+	bool flag = false;
+	int numOfEncounter = 0;
+
+	while (true)
+	{
+
+		if (result.at<uchar>(movePoint) == 255 && flag == false)
+		{
+			flag = true;
+			numOfEncounter++;
+
+			int dis = movePoint.x - mCenter.x;
+
+			if (dis <= 210 && dis >= 195)
+				break;
+
+		}
+		else if (result.at<uchar>(movePoint) == 0 && flag == true)
+		{
+			flag = false;
+		}
+
+		movePoint.x++;
+	}
+
+	mRadius = movePoint.x + 5 - mCenter.x;
+
+#ifdef _DEBUG
+	Mat showImage = mCircleImage.clone();
+	circle(showImage, mCenter, mRadius, Scalar(100, 255, 136));
+	imshow("Rad", showImage);
+	imshow("Canny", result);
+	cout << "Radius : " << mRadius << endl;
+
+	waitKey(10);
+#endif // DEBUG
+
 }

@@ -9,15 +9,13 @@ int main(int argc, char** argv)
 {
 	string vidName;
 
-	cout << argc;
-
-	if (argc == 1)
+	if (argc == 2)
 	{
 		vidName = argv[1];
 	}
 	else 
 	{
-		vidName = "Videos\\video50.mov";
+		vidName = "Videos\\video45.mov";
 	}
 
 	DartDetector detector(vidName, 4);
