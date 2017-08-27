@@ -1,5 +1,6 @@
 #include "DartDetector.h"
 #include "ScoreCalculator.h"
+#include "ImageShow.h"
 #include <iostream>
 #include <list>
 #include <string>
@@ -24,7 +25,7 @@ DartDetector::DartDetector(const string& vidName, int reduce)
 
 }
 
-void DartDetector::detect(int mSecs)
+void DartDetector::Detect(int mSecs)
 {
 	if (isDetecting)
 		return;
@@ -35,7 +36,7 @@ void DartDetector::detect(int mSecs)
 	isDetecting = true;
 }
 
-void DartDetector::init()
+void DartDetector::Init()
 {
 	if (!vid.isOpened())
 	{
@@ -47,7 +48,7 @@ void DartDetector::init()
 
 	namedWindow("SelectWindow");
 
-	setMouseCallback("SelectWindow", OnMouse, this);
+	setMouseCallback("SelectWindow", onMouse, this);
 
 	vid >> frame;
 	resize(frame, frame, Size(frame.size().width / reduceAmount, frame.size().height / reduceAmount));
@@ -63,7 +64,7 @@ void DartDetector::init()
 	isInitialized = true;
 }
 
-void DartDetector::play(int speed)
+void DartDetector::Play(int speed)
 {
 	assert(isInitialized);
 
@@ -78,13 +79,10 @@ void DartDetector::play(int speed)
 
 	pMOG2->apply(resizeF, fgMaskMOG2);
 
-	imshow("Video", resizeF);
+	ImageShow::ShowImage("Video", resizeF, speed);
 
 	if (!isDetecting)
-	{
-		waitKey(speed);
 		return;
-	}
 
 	Mat src;
 
@@ -114,7 +112,7 @@ void DartDetector::play(int speed)
 		scoreCalculator.setImages(warpedBoardImage, warpedPointImage);
 		scoreCalculator.calculateScore();
 
-		ShowScores(warpedBoardImage, scoreCalculator.getPoints(), scoreCalculator.getScores());
+		showScores(warpedBoardImage, scoreCalculator.getPoints(), scoreCalculator.getScores());
 
 		isDetecting = false;
 
@@ -123,23 +121,18 @@ void DartDetector::play(int speed)
 
 		return;
 	}
-
-	waitKey(speed);
 }
 
 //와핑 기준 네 점 선택
 void DartDetector::selectCorners()
 {
 	while (numofCorners < 4)
-	{
-		imshow("SelectWindow", frame);
-		waitKey(10);
-	}
+		ImageShow::ShowImage("SelectWindow", frame, 10);
 
 	destroyWindow("SelectWindow");
 }
 
-void DartDetector::OnMouse(int e, int x, int y, int flags, void* param)
+void DartDetector::onMouse(int e, int x, int y, int flags, void* param)
 {
 	DartDetector* detector = static_cast<DartDetector*>(param);
 	detector->mouseHandler(e, x, y);
@@ -152,7 +145,7 @@ void DartDetector::mouseHandler(int e, int x, int y)
 		corners.insert(corners.end(), Point2f(x, y));
 		numofCorners++;
 		circle(frame, Point(x, y), 3, Scalar(255, 0, 0));
-		imshow("SelectWindow", frame);
+		ImageShow::ShowImage("SelectWindow", frame);
 	}
 }
 
@@ -225,10 +218,10 @@ void DartDetector::detectDartCorner(const Mat& src, int thresh)
 	}
 
 	circle(dst_norm_scaled, finalPoint, 4, Scalar(0), 2, 8, 0);
-	imshow("Corner Detecting", dst_norm_scaled);
+	ImageShow::ShowImage("Corner Detecting", dst_norm_scaled, 20);
 }
 
-void DartDetector::ShowScores(const Mat& backgroundImage, const vector<Point2f>& points, const vector<int>& scores)
+void DartDetector::showScores(const Mat& backgroundImage, const vector<Point2f>& points, const vector<int>& scores)
 {
 	Mat img = backgroundImage.clone();
 
@@ -240,5 +233,5 @@ void DartDetector::ShowScores(const Mat& backgroundImage, const vector<Point2f>&
 		putText(img, text, textPoint, 1, 1, Scalar(0, 255, 255));
 	}
 
-	imshow("Scores", img);
+	ImageShow::ShowImage("Scores", img);
 }

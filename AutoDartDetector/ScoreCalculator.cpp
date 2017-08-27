@@ -1,4 +1,5 @@
 #include "ScoreCalculator.h"
+#include "ImageShow.h"
 #include <memory>
 
 ScoreCaculator::ScoreCaculator()
@@ -100,33 +101,33 @@ float ScoreCaculator::getAngle(const Point2f & a, const Point2f & b, const Point
 	}
 }
 
-int ScoreCaculator::detectCircleByHough(Point2f& boardCenter)
-{
-	Mat gray;
-
-	cvtColor(mCircleImage, gray, CV_BGR2GRAY);
-
-	GaussianBlur(gray, gray, Size(13, 13), 2, 2);
-	vector<Vec3f> circles;
-	HoughCircles(gray, circles, CV_HOUGH_GRADIENT,
-		2, gray.rows / 4, 200, 100, 210, 235);
-
-	if (circles.size() == 0)
-		return 0;
-
-	boardCenter = Point2f(cvRound(circles[0][0]), cvRound(circles[0][1]));
-	int radius = cvRound(circles[0][2]);
-
-	boardCenter.x -= 2;
-	boardCenter.y -= 10;
-
-	Mat result = mCircleImage.clone();
-	circle(result, boardCenter, 3, Scalar(0, 255, 0), -1, 8, 0);
-	circle(result, boardCenter, radius, Scalar(0, 0, 255), 3, 8, 0);
-	imshow("Circle", result);
-
-	return radius;
-}
+//int ScoreCaculator::detectCircleByHough(Point2f& boardCenter)
+//{
+//	Mat gray;
+//
+//	cvtColor(mCircleImage, gray, CV_BGR2GRAY);
+//
+//	GaussianBlur(gray, gray, Size(13, 13), 2, 2);
+//	vector<Vec3f> circles;
+//	HoughCircles(gray, circles, CV_HOUGH_GRADIENT,
+//		2, gray.rows / 4, 200, 100, 210, 235);
+//
+//	if (circles.size() == 0)
+//		return 0;
+//
+//	boardCenter = Point2f(cvRound(circles[0][0]), cvRound(circles[0][1]));
+//	int radius = cvRound(circles[0][2]);
+//
+//	boardCenter.x -= 2;
+//	boardCenter.y -= 10;
+//
+//	Mat result = mCircleImage.clone();
+//	circle(result, boardCenter, 3, Scalar(0, 255, 0), -1, 8, 0);
+//	circle(result, boardCenter, radius, Scalar(0, 0, 255), 3, 8, 0);
+//	imshow("Circle", result);
+//
+//	return radius;
+//}
 
 void ScoreCaculator::detectCircleByBlobDetector()
 {
@@ -166,7 +167,7 @@ void ScoreCaculator::detectCircleByBlobDetector()
 		DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
 	circle(result, center, 5, Scalar(255, 0, 0));
 
-	//imshow("Blob", result);
+	ImageShow::ShowImage("Blob", result);
 #endif // DEBUG
 
 	mCenter.y -= 10;
@@ -254,12 +255,9 @@ void ScoreCaculator::calcRadius()
 #ifdef _DEBUG
 	Mat showImage = mCircleImage.clone();
 	circle(showImage, mCenter, mRadius, Scalar(100, 255, 136));
-	imshow("Rad", showImage);
-	//imshow("Canny", result);
+	ImageShow::ShowImage("Rad", showImage);
 	cout << movePoint.x;
 	cout << "Radius : " << mRadius << endl;
-
-	waitKey(10);
 #endif // DEBUG
 
 }

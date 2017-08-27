@@ -12,9 +12,9 @@ public:
 	DartDetector(int reduceAmount = 4);
 	DartDetector(const string& vidName, int reduceAmount = 4);
 
-	void detect(int mSecs);
-	void init();
-	void play(int speed);
+	void Detect(int mSecs);
+	void Init();
+	void Play(int speed);
 	//Point2f GetPoint(int index);
 
 private:
@@ -42,10 +42,10 @@ private:
 	Ptr< BackgroundSubtractor> pMOG2; //배경 검출기
 
 	void selectCorners();
-	static void DartDetector::OnMouse(int e, int x, int y, int flags, void* param);
+	static void DartDetector::onMouse(int e, int x, int y, int flags, void* param);
 	void mouseHandler(int e, int x, int y);
 	void warpImage(const Mat& inputImage, Mat& result);
 	void detectDartCorner(const Mat& src,  int thresh = 130);
 
-	void ShowScores(const Mat& backgroundImage, const vector<Point2f>& points, const vector<int>& scores);
+	void showScores(const Mat& backgroundImage, const vector<Point2f>& points, const vector<int>& scores);
 };

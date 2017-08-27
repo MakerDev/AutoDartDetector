@@ -26,7 +26,7 @@ private:
 
 	void findHitPoints();
 	float getAngle(const Point2f& a, const Point2f& b, const Point2f& c);
-	int detectCircleByHough(Point2f& boardCenter); //사용 X
+	//int detectCircleByHough(Point2f& boardCenter); //사용 X
 	void detectCircleByBlobDetector();
 	float distance(const Point2f& p1, const Point2f& p2);
 	int calcScore(const Point2f& hitPoint);

@@ -146,11 +146,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DartDetector.cpp" />
+    <ClCompile Include="ImageShow.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ScoreCalculator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DartDetector.h" />
+    <ClInclude Include="ImageShow.h" />
     <ClInclude Include="ScoreCalculator.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
